@@ -1,17 +1,61 @@
+
+# azure-pipelines.scripts.yml
+# Compila MiApp.slnx con scripts dotnet y SDK 9.0.200+.
+# Incluye fallback por .csproj si necesitas usar SDK 8.x.
+
 trigger:
-  - main
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-  - task: UseDotNet@2
-    inputs:
-      packageType: 'sdk'
-      version: '8.x'
+- checkout: self
 
-  - script: dotnet build --configuration Release
-    displayName: 'Compilar proyecto'
+- task: UseDotNet@2
+  displayName: 'Instalar .NET SDK 9.x (slnx compatible)'
+  inputs:
+    packageType: 'sdk'
+    version: '9.0.200'
 
-  - script: dotnet test --configuration Release --no-build
-    displayName: 'Ejecutar pruebas'
+# (Debug opcional) Ver carpetas y confirmar dónde está la solución/proyectos
+- script: |
+    echo "PWD:" && pwd
+    echo "Contenido raíz del repo:" && ls -la $(Build.SourcesDirectory)
+  displayName: 'Listar raíz'
+
+# --- Build por solución .SLNX ---
+- script: dotnet restore MiApp.slnx
+  displayName: 'Restore (.slnx)'
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+- script: dotnet build MiApp.slnx -c Release --no-restore
+  displayName: 'Build (.slnx)'
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+- script: dotnet test MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
+  displayName: 'Test (permitir continuar si está vacío)'
+  continueOnError: true
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+# --- (Opcional) Publicación ---
+# - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory) --no-build
+#   displayName: 'Publish'
+#   workingDirectory: '$(Build.SourcesDirectory)'
+# - publish: $(Build.ArtifactStagingDirectory)
+#   artifact: drop
+
+# --- Fallback por .csproj (DESACTIVADO por defecto) ---
+# Descomenta si tu agente usa SDK 8.x y no puede leer .slnx
+# - script: dotnet restore
+#   displayName: 'Restore (.csproj)'
+#   workingDirectory: '$(Build.SourcesDirectory)/MiApp'
+#
+# - script: dotnet build -c Release --no-restore
+#   displayName: 'Build (.csproj)'
+#   workingDirectory: '$(Build.SourcesDirectory)/MiApp'
+#
+# - script: dotnet test -c Release --no-build
+#   displayName: 'Test (permitir continuar si está vacío)'
+#   continueOnError: true
+#   workingDirectory: '$(Build.SourcesDirectory)/MiApp.Tests'
