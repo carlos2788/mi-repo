@@ -1,7 +1,7 @@
 
 # azure-pipelines.scripts.yml
-# Compila MiApp.slnx con scripts dotnet y SDK 9.0.200+.
-# Incluye fallback por .csproj si necesitas usar SDK 8.x.
+# Compila una solución .SLNX con .NET SDK 10 en Azure DevOps (Ubuntu)
+# y ejecuta tests (permitiendo continuar si están vacíos).
 
 trigger:
 - main
@@ -10,52 +10,52 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+# 1) Obtener el código
 - checkout: self
+  displayName: 'Checkout repo'
 
+# 2) Instalar .NET SDK 10 (soporta net10.0 y .slnx)
 - task: UseDotNet@2
-  displayName: 'Instalar .NET SDK 9.x (slnx compatible)'
+  displayName: 'Instalar .NET SDK 10.x'
   inputs:
     packageType: 'sdk'
-    version: '9.0.200'
+    version: '10.0.100'   # o superior
 
-# (Debug opcional) Ver carpetas y confirmar dónde está la solución/proyectos
-- script: |
-    echo "PWD:" && pwd
-    echo "Contenido raíz del repo:" && ls -la $(Build.SourcesDirectory)
-  displayName: 'Listar raíz'
+# 3) Diagnóstico: confirmar SDK activo y SDKs disponibles
+- script: dotnet --info
+  displayName: '.NET info'
+- script: dotnet --list-sdks
+  displayName: 'SDKs instalados'
 
-# --- Build por solución .SLNX ---
+# (Opcional) Cache de NuGet para acelerar restores
+# Requiere NuGet.config en la raíz o el uso de feeds públicos
+- task: Cache@2
+  displayName: 'Cache NuGet (packages)'
+  inputs:
+    key: 'nuget | "$(Agent.OS)" | **/packages.lock.json, **/*.csproj, **/*.fsproj, **/*.vbproj'
+    restoreKeys: |
+      nuget | "$(Agent.OS)"
+    path: ~/.nuget/packages
+
+# 4) Restore por solución .slnx
 - script: dotnet restore MiApp.slnx
   displayName: 'Restore (.slnx)'
   workingDirectory: '$(Build.SourcesDirectory)'
 
+# 5) Build por solución .slnx
 - script: dotnet build MiApp.slnx -c Release --no-restore
   displayName: 'Build (.slnx)'
   workingDirectory: '$(Build.SourcesDirectory)'
 
+# 6) Test (el proyecto existe pero está vacío: permitir continuar)
 - script: dotnet test MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
   displayName: 'Test (permitir continuar si está vacío)'
-  continueOnError: true
   workingDirectory: '$(Build.SourcesDirectory)'
+  continueOnError: true
 
-# --- (Opcional) Publicación ---
+# 7) (Opcional) Publicación de la app de consola como artefacto
 # - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory) --no-build
 #   displayName: 'Publish'
 #   workingDirectory: '$(Build.SourcesDirectory)'
 # - publish: $(Build.ArtifactStagingDirectory)
 #   artifact: drop
-
-# --- Fallback por .csproj (DESACTIVADO por defecto) ---
-# Descomenta si tu agente usa SDK 8.x y no puede leer .slnx
-# - script: dotnet restore
-#   displayName: 'Restore (.csproj)'
-#   workingDirectory: '$(Build.SourcesDirectory)/MiApp'
-#
-# - script: dotnet build -c Release --no-restore
-#   displayName: 'Build (.csproj)'
-#   workingDirectory: '$(Build.SourcesDirectory)/MiApp'
-#
-# - script: dotnet test -c Release --no-build
-#   displayName: 'Test (permitir continuar si está vacío)'
-#   continueOnError: true
-#   workingDirectory: '$(Build.SourcesDirectory)/MiApp.Tests'
