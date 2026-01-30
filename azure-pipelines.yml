@@ -1,7 +1,5 @@
 
 # azure-pipelines.scripts.yml
-# Compila una solución .SLNX con .NET SDK 10 en Azure DevOps (Ubuntu)
-# y ejecuta tests (permitiendo continuar si están vacíos).
 
 trigger:
 - main
@@ -9,53 +7,65 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  NUGET_PACKAGES: '$(Pipeline.Workspace)/.nuget/packages'
+
 steps:
-# 1) Obtener el código
 - checkout: self
   displayName: 'Checkout repo'
 
-# 2) Instalar .NET SDK 10 (soporta net10.0 y .slnx)
 - task: UseDotNet@2
   displayName: 'Instalar .NET SDK 10.x'
   inputs:
     packageType: 'sdk'
-    version: '10.0.100'   # o superior
+    version: '10.0.100'
 
-# 3) Diagnóstico: confirmar SDK activo y SDKs disponibles
+# Diagnóstico
 - script: dotnet --info
   displayName: '.NET info'
 - script: dotnet --list-sdks
   displayName: 'SDKs instalados'
 
-# (Opcional) Cache de NuGet para acelerar restores
-# Requiere NuGet.config en la raíz o el uso de feeds públicos
+# Preparar carpeta de caché
+- script: mkdir -p '$(NUGET_PACKAGES)'
+  displayName: 'Crear carpeta NuGet en workspace'
+
+# Cache NuGet
 - task: Cache@2
   displayName: 'Cache NuGet (packages)'
   inputs:
     key: 'nuget | "$(Agent.OS)" | **/packages.lock.json, **/*.csproj, **/*.fsproj, **/*.vbproj'
     restoreKeys: |
       nuget | "$(Agent.OS)"
-    path: ~/.nuget/packages
+    path: '$(NUGET_PACKAGES)'
 
-# 4) Restore por solución .slnx
+# Restore (usando la carpeta cacheada)
 - script: dotnet restore MiApp.slnx
   displayName: 'Restore (.slnx)'
   workingDirectory: '$(Build.SourcesDirectory)'
+  env:
+    NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
-# 5) Build por solución .slnx
+# Build
 - script: dotnet build MiApp.slnx -c Release --no-restore
   displayName: 'Build (.slnx)'
   workingDirectory: '$(Build.SourcesDirectory)'
+  env:
+    NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
-# 6) Test (el proyecto existe pero está vacío: permitir continuar)
+# Test (proyecto vacío: permitir continuar)
 - script: dotnet test MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
   displayName: 'Test (permitir continuar si está vacío)'
   workingDirectory: '$(Build.SourcesDirectory)'
   continueOnError: true
+  env:
+    NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
-# 7) (Opcional) Publicación de la app de consola como artefacto
+# (Opcional) Publish
 # - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory) --no-build
 #   displayName: 'Publish'
 #   workingDirectory: '$(Build.SourcesDirectory)'
+#   env:
+#     NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 # - publish: $(Build.ArtifactStagingDirectory)
 #   artifact: drop
