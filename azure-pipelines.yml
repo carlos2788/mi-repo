@@ -4,6 +4,11 @@
 trigger:
 - main
 
+variables:
+  environment: 'dev' # por ejemplo: staging
+  appName: 'mi-azdevops-cd-staging'
+
+
 pool:
   vmImage: 'ubuntu-latest'
 
@@ -54,12 +59,32 @@ steps:
     NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
 # Test (proyecto vacío: permitir continuar)
-- script: dotnet test MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
+- script: dotnet test test/MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
   displayName: 'Test (permitir continuar si está vacío)'
   workingDirectory: '$(Build.SourcesDirectory)'
   continueOnError: true
   env:
     NUGET_PACKAGES: '$(NUGET_PACKAGES)'
+    
+ # Añadido nuevo para la conexion del recurso
+ - stage: Deploy
+    displayName: 'Desplegar en Staging'
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: DeployJob
+        environment: '$(environment)'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: 'azure-continuos-integration-connection'
+                    appType: 'webApp'
+                    appName: '$(appName)'
+                    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+# Añadido nuevo para la conexion del recurso
 
 # (Opcional) Publish
 # - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory) --no-build
