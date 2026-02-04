@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="MiApp.Tests/MiApp.Tests.csproj" />
-  <Project Path="MiApp\MiApp.csproj" />
+  <Project Path="test/MiApp.Tests/MiApp.Tests.csproj" />
+  <Project Path="src\MiApp\MiApp.csproj" />
 </Solution>

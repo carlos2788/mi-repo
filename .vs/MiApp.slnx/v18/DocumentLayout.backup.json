@@ -3,8 +3,19 @@
   "WorkspaceRootPath": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EDD91C5C-1C1B-C871-4C12-20D26F20EFDB}|MiApp\\MiApp.csproj|c:\\users\\carlos.a.quintero\\desktop\\staff\\devops\\mi-repo\\miapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{EDD91C5C-1C1B-C871-4C12-20D26F20EFDB}|MiApp\\MiApp.csproj|solutionrelative:miapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{58C3023A-DE7F-24B8-D895-19190E335E4B}|test\\MiApp.Tests\\MiApp.Tests.csproj|c:\\users\\carlos.a.quintero\\desktop\\staff\\devops\\mi-repo\\test\\miapp.tests\\miapp.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{58C3023A-DE7F-24B8-D895-19190E335E4B}|test\\MiApp.Tests\\MiApp.Tests.csproj|solutionrelative:test\\miapp.tests\\miapp.tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF60DFBB-3D4F-5DE0-4C11-348FFE555AE1}|src\\MiApp\\MiApp.csproj|c:\\users\\carlos.a.quintero\\desktop\\staff\\devops\\mi-repo\\src\\miapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF60DFBB-3D4F-5DE0-4C11-348FFE555AE1}|src\\MiApp\\MiApp.csproj|solutionrelative:src\\miapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\MiApp\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:MiApp\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,15 +30,51 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "Microsoft.Common.CurrentVersion.targets",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Professional\\MSBuild\\Current\\Bin\\amd64\\Microsoft.Common.CurrentVersion.targets",
+              "ViewState": "AgIAAGgIAAAAAAAAAAAjwIwIAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-02-03T16:58:43.1Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MiApp.Tests.csproj",
+              "DocumentMoniker": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\test\\MiApp.Tests\\MiApp.Tests.csproj",
+              "RelativeDocumentMoniker": "test\\MiApp.Tests\\MiApp.Tests.csproj",
+              "ToolTip": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\test\\MiApp.Tests\\MiApp.Tests.csproj",
+              "RelativeToolTip": "test\\MiApp.Tests\\MiApp.Tests.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-03T16:58:16.444Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\src\\MiApp\\Program.cs",
+              "RelativeDocumentMoniker": "src\\MiApp\\Program.cs",
+              "ToolTip": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\src\\MiApp\\Program.cs",
+              "RelativeToolTip": "src\\MiApp\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T16:53:13.561Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\MiApp\\Program.cs",
               "RelativeDocumentMoniker": "MiApp\\Program.cs",
               "ToolTip": "C:\\Users\\carlos.a.quintero\\Desktop\\Staff\\DevOps\\mi-repo\\MiApp\\Program.cs",
               "RelativeToolTip": "MiApp\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T16:28:32.492Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-29T16:28:32.492Z"
             }
           ]
         }
