@@ -1,4 +1,5 @@
 
+# azure-pipelines.yml
 trigger:
   - main
 
@@ -37,17 +38,12 @@ stages:
           - script: mkdir -p '$(NUGET_PACKAGES)'
             displayName: 'Crear carpeta NuGet en workspace'
 
-          # Cache NuGet
+          # Cache NuGet (clave en UNA sola línea)
           - task: Cache@2
             displayName: 'Cache NuGet (packages)'
             inputs:
-              key: |
-                nuget
-                $(Agent.OS)
-                **/packages.lock.json, **/*.csproj, **/*.fsproj, **/*.vbproj
-              restoreKeys: |
-                nuget
-                $(Agent.OS)
+              key: 'nuget | $(Agent.OS) | **/packages.lock.json, **/*.csproj, **/*.fsproj, **/*.vbproj'
+              restoreKeys: 'nuget | $(Agent.OS)'
               path: '$(NUGET_PACKAGES)'
 
           # Restore (usando la carpeta cacheada)
