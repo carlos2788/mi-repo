@@ -4,17 +4,19 @@ trigger:
   - main
 
 variables:
-  environment: 'dev'                        # p.ej.: staging/dev/prod
-  appName: 'mi-azdevops-cd-staging'
+  environment: 'dev'                        # p.ej.: dev/staging/prod
+  appName: 'mi-azdevops-cd-staging'        # nombre EXACTO de tu App Service
   NUGET_PACKAGES: '$(Pipeline.Workspace)/.nuget/packages'
 
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
-  # ---------- BUILD ----------
+  # =======================
+  #        BUILD
+  # =======================
   - stage: Build
-    displayName: 'Compilar y probar'
+    displayName: 'Compilar, testear y empaquetar'
     jobs:
       - job: BuildJob
         displayName: 'Build job'
@@ -26,7 +28,7 @@ stages:
             displayName: 'Instalar .NET SDK 10.x'
             inputs:
               packageType: 'sdk'
-              version: '10.0.100'
+              version: '10.0.100'          # cambia si usas otra versión
 
           # Diagnóstico
           - script: dotnet --info
@@ -38,7 +40,7 @@ stages:
           - script: mkdir -p '$(NUGET_PACKAGES)'
             displayName: 'Crear carpeta NuGet en workspace'
 
-          # Cache NuGet (clave en UNA sola línea)
+          # Cache NuGet (key en UNA sola línea)
           - task: Cache@2
             displayName: 'Cache NuGet (packages)'
             inputs:
@@ -46,7 +48,7 @@ stages:
               restoreKeys: 'nuget | $(Agent.OS)'
               path: '$(NUGET_PACKAGES)'
 
-          # Restore (usando la carpeta cacheada)
+          # Restore
           - script: dotnet restore MiApp.slnx
             displayName: 'Restore (.slnx)'
             workingDirectory: '$(Build.SourcesDirectory)'
@@ -60,7 +62,7 @@ stages:
             env:
               NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
-          # Test (permitir continuar si el proyecto está vacío)
+          # Test (permitir continuar si el proyecto de tests no existe aún)
           - script: dotnet test test/MiApp.Tests/MiApp.Tests.csproj -c Release --no-build
             displayName: 'Test (permitir continuar si está vacío)'
             workingDirectory: '$(Build.SourcesDirectory)'
@@ -68,18 +70,34 @@ stages:
             env:
               NUGET_PACKAGES: '$(NUGET_PACKAGES)'
 
-          # (Opcional) Publicar artefactos si lo necesitas en la release
-          # - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory) --no-build
-          #   displayName: 'Publish'
-          #   workingDirectory: '$(Build.SourcesDirectory)'
-          #   env:
-          #     NUGET_PACKAGES: '$(NUGET_PACKAGES)'
-          # - publish: $(Build.ArtifactStagingDirectory)
-          #   artifact: drop
+          # =======================
+          #      PUBLICAR + ZIP
+          # =======================
 
-  # ---------- DEPLOY ----------
+          # Publicar binarios de la solución
+          - script: dotnet publish MiApp.slnx -c Release -o $(Build.ArtifactStagingDirectory)/publish --no-build
+            displayName: 'Publish'
+
+          # Crear ZIP del contenido publicado
+          - task: ArchiveFiles@2
+            displayName: 'Crear ZIP del publish'
+            inputs:
+              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/publish'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/webapp.zip'
+              replaceExistingArchive: true
+
+          # Publicar el ZIP como artefacto
+          - publish: $(Build.ArtifactStagingDirectory)/webapp.zip
+            displayName: 'Publicar artefacto (webapp.zip)'
+            artifact: drop
+
+  # =======================
+  #        DEPLOY
+  # =======================
   - stage: Deploy
-    displayName: 'Desplegar en Staging'
+    displayName: 'Desplegar en App Service'
     dependsOn: Build
     condition: succeeded()
     jobs:
@@ -90,12 +108,18 @@ stages:
           runOnce:
             deploy:
               steps:
+                # Descargar el artefacto "drop" del stage Build
+                - download: current
+                  displayName: 'Descargar artefacto'
+                  artifact: drop
+
+                # Desplegar el ZIP en la Web App
                 - task: AzureWebApp@1
                   displayName: 'Deploy a Azure Web App'
                   inputs:
                     azureSubscription: 'azure-continuos-integration-connection'
                     appType: 'webApp'
                     appName: '$(appName)'
-                    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-
-  #   artifact: drop
+                    package: '$(Pipeline.Workspace)/drop/webapp.zip'
+                    # Si despliegas a un slot:
+                    # slotName: 'staging'
